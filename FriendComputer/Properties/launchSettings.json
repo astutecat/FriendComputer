@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "FriendComputer": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "BotToken": "MjMwMjY1MTg1NzE2MTQyMDgw.DvfmNQ.Lnoxrr14MQw2lkgM6Qaad-1B-UQ"
+      }
+    }
+  }
+}
