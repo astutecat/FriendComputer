@@ -13,7 +13,7 @@ namespace Carl.Tests
     public void Test1()
     {
       var hostbuilder = Program.GetHostBuilder(new string[] { }).Build();
-      var factory = hostbuilder.Services.GetService<ICommandFactory<IBotCommand>>();
+      var factory = hostbuilder.Services.GetService<ICommandFactory<ICommand>>();
       var match = factory.FindOrDefault("ping");
       Assert.NotNull(match);
     }
