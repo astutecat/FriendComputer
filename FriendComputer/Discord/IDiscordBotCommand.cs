@@ -5,6 +5,7 @@ namespace FriendComputer.Discord
 {
   internal interface IDiscordBotCommand : IBotCommand
   {
-    Task ExecuteAsync(ICommandContext ctx, int argPos);
+    Task ExecuteAsync(ICommandContext ctx, int argPos, ICommand command);
+    Task ExecuteAsync(ICommandContext ctx, int argPos, IImageCommand command);
   }
 }

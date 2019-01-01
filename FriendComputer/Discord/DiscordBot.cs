@@ -18,14 +18,16 @@ namespace FriendComputer.Discord
     private CancellationTokenSource _cancellationSource;
     private DiscordSocketClient _client;
     private DiscordSocketConfig _socketConfig;
-    private ICommandFactory<IBotCommand> _commandFactory;
+    private ICommandFactory<ICommand> _commandFactory;
+    private ICommandExecutor _commandExecutor;
     private ILogger<DiscordBot> _logger;
     private Task _startupTask;
     private Timer _timer;
 
     public DiscordBot(IOptions<AppConfig> config,
                       ILogger<DiscordBot> logger,
-                      ICommandFactory<IBotCommand> commandFactory)
+                      ICommandFactory<ICommand> commandFactory,
+                      ICommandExecutor commandExecutor)
     {
       _cancellationSource = new CancellationTokenSource();
       _config = config;
@@ -36,6 +38,7 @@ namespace FriendComputer.Discord
       };
       _client.Log += Log;
       _commandFactory = commandFactory;
+      _commandExecutor = commandExecutor ?? throw new ArgumentNullException(nameof(commandExecutor));
     }
 
     public void Dispose()
@@ -85,8 +88,12 @@ namespace FriendComputer.Discord
             .Split(" ")
             .First()
             .ToLowerInvariant();
-          await _commandFactory.FindOrDefault<IDiscordBotCommand>(command)?.ExecuteAsync(ctx,
-          argPos);
+
+          var botCommand = _commandFactory.FindOrDefault<ICommand>(command);
+          if (botCommand == null) return;
+
+          await _commandExecutor.ExecuteAsync(ctx, argPos, botCommand);
+          
         }
       });
     }

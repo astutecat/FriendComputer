@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FriendComputer.BaseCommands
 {
-  public abstract class FoxCommand : IRestApiCommand
+  public class FoxCommand : IImageCommand
   {
     private readonly Uri _baseUri = new Uri("https://randomfox.ca/floof/");
     private readonly HttpClient _httpClient;
@@ -15,7 +15,7 @@ namespace FriendComputer.BaseCommands
       _httpClient = httpClientFactory.CreateClient(nameof(FoxCommand));
     }
 
-    internal async Task<(bool, string)> TryGetImageUrlAsync()
+    public async Task<(bool, string)> GetImageUrlAsync()
     {
       var response = await _httpClient.GetAsync(_baseUri);
       if (!response.IsSuccessStatusCode)
@@ -28,6 +28,11 @@ namespace FriendComputer.BaseCommands
       string image = data?.image;
 
       return (!string.IsNullOrEmpty(image), image);
+    }
+
+    public async Task<(bool, string)> ExecuteAsync()
+    {
+      return await GetImageUrlAsync();
     }
   }
 }
