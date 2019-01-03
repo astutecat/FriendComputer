@@ -33,7 +33,8 @@ namespace FriendComputer.Discord
       _config = config;
       _logger = logger;
       _client = new DiscordSocketClient();
-      _socketConfig = new DiscordSocketConfig() {
+      _socketConfig = new DiscordSocketConfig()
+      {
         MessageCacheSize = _config.Value.MessagesToCache,
       };
       _client.Log += Log;
@@ -72,7 +73,7 @@ namespace FriendComputer.Discord
 
     internal Task MessageReceivedAsync(SocketMessage messageParam)
     {
-      return Task.Run(async() =>
+      return Task.Run(async () =>
       {
         if (!(messageParam is SocketUserMessage message))
         {
@@ -92,8 +93,14 @@ namespace FriendComputer.Discord
           var botCommand = _commandFactory.FindOrDefault<ICommand>(command);
           if (botCommand == null) return;
 
-          await _commandExecutor.ExecuteAsync(ctx, argPos, botCommand);
-          
+          try
+          {
+            await _commandExecutor.ExecuteAsync(ctx, argPos, botCommand);
+          }
+          catch (Exception ex)
+          {
+            _logger.LogError(ex, "Error executing command");
+          }
         }
       });
     }

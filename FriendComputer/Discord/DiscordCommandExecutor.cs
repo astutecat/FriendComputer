@@ -14,6 +14,8 @@ namespace FriendComputer.Discord
     {
       (bool success, string text) = await command.ExecuteAsync();
 
+      if (!success) throw new CommandExecutionException(command);
+
       using (ctx.Channel.EnterTypingState())
       {
         await ctx.Channel.SendMessageAsync(text);
@@ -23,6 +25,8 @@ namespace FriendComputer.Discord
     public async Task ExecuteAsync(CommandContext ctx, int argPos, IImageCommand command)
     {
       (bool success, string image) = await command.GetImageUrlAsync();
+
+      if (!success) throw new CommandExecutionException(command);
 
       using (ctx.Channel.EnterTypingState())
       {
