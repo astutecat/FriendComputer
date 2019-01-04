@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using FriendComputer;
+using FriendComputer.BaseCommands;
 using FriendComputer.Discord;
-using FriendComputer.Discord.Commands;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -13,7 +13,7 @@ namespace Carl.Tests
     public void Test1()
     {
       var hostbuilder = Program.GetHostBuilder(new string[] { }).Build();
-      var factory = hostbuilder.Services.GetService<ICommandFactory<IBotCommand>>();
+      var factory = hostbuilder.Services.GetService<ICommandFactory<ICommand>>();
       var match = factory.FindOrDefault("ping");
       Assert.NotNull(match);
     }
@@ -22,10 +22,10 @@ namespace Carl.Tests
     public void Test2()
     {
       var hostbuilder = Program.GetHostBuilder(new string[] { }).Build();
-      var factory = hostbuilder.Services.GetService<ICommandFactory<IBotCommand>>();
-      var match = factory.FindOrDefault<IDiscordBotCommand>("ping");
+      var factory = hostbuilder.Services.GetService<ICommandFactory<ICommand>>();
+      var match = factory.FindOrDefault<ICommand>("ping");
       Assert.NotNull(match);
-      match.Should().BeOfType<DiscordPingCommand>();
+      match.Should().BeOfType<PingCommand>();
     }
   }
 }

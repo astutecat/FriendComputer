@@ -8,8 +8,11 @@
 
   <ItemGroup>
     <Compile Remove="db\**" />
+    <Compile Remove="Discord\Commands\**" />
     <EmbeddedResource Remove="db\**" />
+    <EmbeddedResource Remove="Discord\Commands\**" />
     <None Remove="db\**" />
+    <None Remove="Discord\Commands\**" />
   </ItemGroup>
 
   <ItemGroup>

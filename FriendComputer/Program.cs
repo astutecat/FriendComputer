@@ -61,17 +61,18 @@ namespace FriendComputer
           services.AddHostedService<DiscordBot>();
           services.AddDbContext<CarlContext>();
 
-          foreach (var t in GetAllTypesOf<IRestApiCommand>())
-            {
-              services.AddHttpClient(t.Name);
-            }
+          foreach (var t in GetAllTypesOf<IImageCommand>())
+          {
+            services.AddHttpClient(t.Name);
+          }
 
-          foreach (var t in GetAllTypesOf<IBotCommand>())
-            {
-              services.AddScoped(typeof(IBotCommand), t);
-            }
+          foreach (var t in GetAllTypesOf<ICommand>())
+          {
+            services.AddScoped(typeof(ICommand), t);
+          }
 
-          services.AddSingleton<ICommandFactory<IBotCommand>, CommandFactory<IBotCommand>>();
+          services.AddSingleton<ICommandFactory<ICommand>, CommandFactory<ICommand>>();
+          services.AddSingleton<ICommandExecutor, DiscordCommandExecutor>();
         })
         .ConfigureLogging((hostingContext, logging) =>
         {

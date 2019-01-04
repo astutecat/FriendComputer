@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FriendComputer.BaseCommands
 {
-  public abstract class CatCommand : IRestApiCommand
+  public class CatCommand : IImageCommand
   {
     private readonly Uri _baseUri = new Uri("https://aws.random.cat/meow");
     private readonly HttpClient _httpClient;
@@ -15,7 +15,7 @@ namespace FriendComputer.BaseCommands
       _httpClient = httpClientFactory.CreateClient(nameof(CatCommand));
     }
 
-    internal async Task<(bool, string)> GetImageUrlAsync()
+    public async Task<(bool, string)> GetImageUrlAsync()
     {
       var response = await _httpClient.GetAsync(_baseUri);
       if (!response.IsSuccessStatusCode)
@@ -29,5 +29,11 @@ namespace FriendComputer.BaseCommands
 
       return !string.IsNullOrEmpty(image) ? (true, image) : (false, null);
     }
+
+    public async Task<(bool, string)> ExecuteAsync()
+    {
+      return await GetImageUrlAsync();
+    }
+
   }
 }

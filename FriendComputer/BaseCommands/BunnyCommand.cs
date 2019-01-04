@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FriendComputer.BaseCommands
 {
-  public abstract class BunnyCommand : IRestApiCommand
+  public class BunnyCommand : IImageCommand
   {
     private readonly Uri _baseUri = new Uri("https://api.bunnies.io/v2/loop/random/?media=gif");
     private readonly HttpClient _httpClient;
@@ -15,7 +15,7 @@ namespace FriendComputer.BaseCommands
       _httpClient = httpClientFactory.CreateClient(nameof(BunnyCommand));
     }
 
-    internal async Task<(bool, string)> GetImageUrlAsync()
+    public async Task<(bool, string)> GetImageUrlAsync()
     {
       var response = await _httpClient.GetAsync(_baseUri);
       if (!response.IsSuccessStatusCode)
@@ -29,5 +29,11 @@ namespace FriendComputer.BaseCommands
 
       return (!string.IsNullOrEmpty(image), image);
     }
+
+    public async Task<(bool, string)> ExecuteAsync()
+    {
+      return await GetImageUrlAsync();
+    }
+
   }
 }

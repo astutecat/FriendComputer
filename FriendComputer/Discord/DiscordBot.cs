@@ -18,24 +18,28 @@ namespace FriendComputer.Discord
     private CancellationTokenSource _cancellationSource;
     private DiscordSocketClient _client;
     private DiscordSocketConfig _socketConfig;
-    private ICommandFactory<IBotCommand> _commandFactory;
+    private ICommandFactory<ICommand> _commandFactory;
+    private ICommandExecutor _commandExecutor;
     private ILogger<DiscordBot> _logger;
     private Task _startupTask;
     private Timer _timer;
 
     public DiscordBot(IOptions<AppConfig> config,
                       ILogger<DiscordBot> logger,
-                      ICommandFactory<IBotCommand> commandFactory)
+                      ICommandFactory<ICommand> commandFactory,
+                      ICommandExecutor commandExecutor)
     {
       _cancellationSource = new CancellationTokenSource();
       _config = config;
       _logger = logger;
       _client = new DiscordSocketClient();
-      _socketConfig = new DiscordSocketConfig() {
+      _socketConfig = new DiscordSocketConfig()
+      {
         MessageCacheSize = _config.Value.MessagesToCache,
       };
       _client.Log += Log;
       _commandFactory = commandFactory;
+      _commandExecutor = commandExecutor ?? throw new ArgumentNullException(nameof(commandExecutor));
     }
 
     public void Dispose()
@@ -69,7 +73,7 @@ namespace FriendComputer.Discord
 
     internal Task MessageReceivedAsync(SocketMessage messageParam)
     {
-      return Task.Run(async() =>
+      return Task.Run(async () =>
       {
         if (!(messageParam is SocketUserMessage message))
         {
@@ -85,8 +89,18 @@ namespace FriendComputer.Discord
             .Split(" ")
             .First()
             .ToLowerInvariant();
-          await _commandFactory.FindOrDefault<IDiscordBotCommand>(command)?.ExecuteAsync(ctx,
-          argPos);
+
+          var botCommand = _commandFactory.FindOrDefault<ICommand>(command);
+          if (botCommand == null) return;
+
+          try
+          {
+            await _commandExecutor.ExecuteAsync(ctx, argPos, botCommand);
+          }
+          catch (Exception ex)
+          {
+            _logger.LogError(ex, "Error executing command");
+          }
         }
       });
     }

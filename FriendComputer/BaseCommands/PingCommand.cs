@@ -1,8 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace FriendComputer.BaseCommands
 {
-  public abstract class PingCommand
+  public class PingCommand : ICommand
   {
     private readonly ILogger<PingCommand> _logger;
 
@@ -11,9 +12,9 @@ namespace FriendComputer.BaseCommands
       _logger = logger;
     }
 
-    internal (bool, string) GetReply()
+    public async Task<(bool, string)> ExecuteAsync()
     {
-      return (true, "pong!");
+      return await Task.Run(() => (true, "pong!"));
     }
   }
 }
